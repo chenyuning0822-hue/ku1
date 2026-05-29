@@ -166,3 +166,24 @@ PYTHONPATH=src python3 scripts/candidate_strategy_report.py \
 ```
 
 报告会输出整体表现、训练/测试期表现、月度盈亏、最大回撤、联赛过滤敏感性和逐单累计收益曲线。联赛过滤目前只作为观察项；如果过滤后测试样本太少，不能直接当成正式策略。
+
+## 每日候选单
+
+如果已经生成了新的 side dataset，可以直接导出当天候选单：
+
+```bash
+PYTHONPATH=src python3 scripts/export_live_candidates.py \
+  --side-dataset data/processed/side_dataset_2025_all.csv \
+  --output reports/live_candidates/latest_candidates.csv
+```
+
+不传 `--date` 时，脚本会自动使用数据里的最新日期。也可以指定日期：
+
+```bash
+PYTHONPATH=src python3 scripts/export_live_candidates.py \
+  --side-dataset data/processed/side_dataset_2025_all.csv \
+  --date 20251230 \
+  --output reports/live_candidates/20251230_candidates.csv
+```
+
+历史复盘时可以加 `--include-results`，输出赛果和理论盈亏；实盘前跟踪不要加这个参数。
