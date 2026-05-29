@@ -1,0 +1,48 @@
+name: ML / Strategy Experiment
+description: Record one strategy or machine-learning experiment.
+title: "[Experiment] "
+labels: ["experiment"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+      description: What market behavior are we testing?
+      placeholder: Example: high activity near kickoff after home line weakens may contain signal.
+    validations:
+      required: true
+  - type: input
+    id: data
+    attributes:
+      label: Data Window
+      placeholder: 2025-01 to 2025-12, excluding 2025-11 for validation
+    validations:
+      required: true
+  - type: textarea
+    id: features
+    attributes:
+      label: Features / Rules
+      description: List the fields, rule buckets, or model features used.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation Design
+      description: Time split, held-out months, league filters, sample threshold.
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Results
+      description: Bets, ROI, win rate, drawdown if available, and links to local report filenames.
+    validations:
+      required: false
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision
+      description: Keep, reject, retest with more data, or convert to model feature.
+    validations:
+      required: false

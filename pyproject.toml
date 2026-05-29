@@ -1,0 +1,15 @@
+[project]
+name = "football-water-quant"
+version = "0.1.0"
+description = "Single-book football water odds quant research framework."
+requires-python = ">=3.9"
+dependencies = [
+  "pandas",
+  "scikit-learn",
+  "joblib",
+  "openpyxl",
+  "pyarrow",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
