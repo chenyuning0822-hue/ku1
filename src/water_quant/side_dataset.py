@@ -30,6 +30,7 @@ def build_side_dataset(features: pd.DataFrame) -> pd.DataFrame:
             side_df["away_score"] if side == "home" else side_df["home_score"]
         )
         side_df["side_margin"] = side_df["side_score"] - side_df["opponent_score"]
+        side_df = _add_side_window_features(side_df, side)
 
         keep = [col for col in METADATA_COLUMNS if col in side_df.columns]
         keep += [
@@ -69,10 +70,43 @@ def build_side_dataset(features: pd.DataFrame) -> pd.DataFrame:
         ]:
             if col in side_df.columns:
                 keep.append(col)
+        keep += [col for col in side_df.columns if col.startswith("side_w_")]
+        keep += [col for col in side_df.columns if col.startswith("w_")]
         rows.append(side_df[keep])
 
     result = pd.concat(rows, ignore_index=True)
     return result.sort_values(["date", "match_id", "side"], kind="stable").reset_index(drop=True)
+
+
+def _add_side_window_features(df: pd.DataFrame, side: str) -> pd.DataFrame:
+    side_prefix = "home" if side == "home" else "away"
+    additions = {}
+    for col in list(df.columns):
+        if not col.startswith("w_"):
+            continue
+        if "_home_odds_" in col:
+            side_col = col.replace("_home_odds_", "_side_odds_")
+            other_col = col.replace("_home_odds_", "_opponent_odds_")
+            if side_prefix == "home":
+                additions[f"side_{side_col}"] = df[col]
+            else:
+                additions[f"side_{other_col}"] = df[col]
+        elif "_away_odds_" in col:
+            side_col = col.replace("_away_odds_", "_side_odds_")
+            other_col = col.replace("_away_odds_", "_opponent_odds_")
+            if side_prefix == "away":
+                additions[f"side_{side_col}"] = df[col]
+            else:
+                additions[f"side_{other_col}"] = df[col]
+        elif "_handicap_" in col:
+            value = df[col]
+            if col.endswith("_first") or col.endswith("_last") or col.endswith("_mean") or col.endswith("_change") or col.endswith("_last_step"):
+                value = value if side == "home" else -value
+            additions[f"side_{col}"] = value
+    if additions:
+        additions_df = pd.DataFrame(additions, index=df.index)
+        return pd.concat([df, additions_df], axis=1).copy()
+    return df
 
 
 def side_dataset_summary(side_df: pd.DataFrame) -> pd.DataFrame:

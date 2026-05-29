@@ -66,8 +66,13 @@ def time_split(df: pd.DataFrame, config: SplitConfig = SplitConfig()) -> dict[st
 
 def available_features(df: pd.DataFrame) -> tuple[list[str], list[str]]:
     numeric = [col for col in NUMERIC_FEATURES if col in df.columns]
+    numeric += [
+        col
+        for col in df.columns
+        if col.startswith("side_w_") and pd.api.types.is_numeric_dtype(df[col])
+    ]
     categorical = [col for col in CATEGORICAL_FEATURES if col in df.columns]
-    return numeric, categorical
+    return list(dict.fromkeys(numeric)), categorical
 
 
 def summarize_predictions(
