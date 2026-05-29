@@ -58,4 +58,10 @@ def attach_home_handicap_target(features: pd.DataFrame, results: pd.DataFrame) -
         ),
         axis=1,
     )
+    df["target_away_profit"] = df.apply(
+        lambda row: asian_handicap_profit(
+            -row["home_margin"], -row["handicap_last"], row["away_odds_last"]
+        ),
+        axis=1,
+    )
     return df

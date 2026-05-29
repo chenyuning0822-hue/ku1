@@ -14,6 +14,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--features", required=True)
     parser.add_argument("--rules", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--side", choices=["home", "away"], default="home")
     parser.add_argument("--top", type=int, default=30)
     return parser.parse_args()
 
@@ -23,7 +24,7 @@ def main() -> None:
     features = pd.read_csv(args.features)
     features["month"] = pd.to_numeric(features["date"], errors="coerce").astype("Int64") // 100
     rules = pd.read_csv(args.rules).head(args.top)
-    monthly = apply_rules_by_period(features, rules, period_col="month")
+    monthly = apply_rules_by_period(features, rules, side=args.side, period_col="month")
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     monthly.to_csv(output, index=False)

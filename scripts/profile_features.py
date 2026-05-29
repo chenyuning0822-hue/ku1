@@ -13,6 +13,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--features", required=True)
     parser.add_argument("--output-dir", default="reports/profile")
+    parser.add_argument("--side", choices=["home", "away"], default="home")
     return parser.parse_args()
 
 
@@ -22,8 +23,8 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    tables = profile_features(df)
-    tables["baseline_rules"] = baseline_rules(df)
+    tables = profile_features(df, side=args.side)
+    tables["baseline_rules"] = baseline_rules(df, side=args.side)
     for name, table in tables.items():
         table.to_csv(output_dir / f"{name}.csv", index=False)
 

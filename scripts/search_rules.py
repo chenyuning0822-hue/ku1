@@ -13,6 +13,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--features", required=True)
     parser.add_argument("--output", default="reports/rule_search.csv")
+    parser.add_argument("--side", choices=["home", "away"], default="home")
     parser.add_argument("--min-bets", type=int, default=80)
     parser.add_argument("--max-depth", type=int, default=3)
     parser.add_argument("--validation-output", default=None)
@@ -23,7 +24,9 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     df = pd.read_csv(args.features)
-    rules = search_rule_segments(df, min_bets=args.min_bets, max_depth=args.max_depth)
+    rules = search_rule_segments(
+        df, side=args.side, min_bets=args.min_bets, max_depth=args.max_depth
+    )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     rules.to_csv(output, index=False)
@@ -32,7 +35,7 @@ def main() -> None:
         print(rules.head(20).to_string(index=False))
     if args.validation_output:
         validation = validate_rules_by_period(
-            df, rules, top_n=args.top_n_validation
+            df, rules, side=args.side, top_n=args.top_n_validation
         )
         validation_output = Path(args.validation_output)
         validation_output.parent.mkdir(parents=True, exist_ok=True)

@@ -9,7 +9,13 @@ from sklearn.pipeline import Pipeline
 
 
 ID_COLUMNS = {"match_id"}
-TARGET_COLUMNS = {"target_home_profit", "home_score", "away_score", "home_margin"}
+TARGET_COLUMNS = {
+    "target_home_profit",
+    "target_away_profit",
+    "home_score",
+    "away_score",
+    "home_margin",
+}
 METADATA_COLUMNS = {
     "date",
     "league",
