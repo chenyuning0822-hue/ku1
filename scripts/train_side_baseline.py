@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
 def build_pipeline(numeric_features: list[str], categorical_features: list[str]):
     try:
         from sklearn.compose import ColumnTransformer
-        from sklearn.ensemble import HistGradientBoostingRegressor
+        from sklearn.ensemble import ExtraTreesRegressor
         from sklearn.impute import SimpleImputer
         from sklearn.pipeline import Pipeline
         from sklearn.preprocessing import OneHotEncoder
@@ -51,11 +51,11 @@ def build_pipeline(numeric_features: list[str], categorical_features: list[str])
             ("categorical", categorical_pipeline, categorical_features),
         ]
     )
-    model = HistGradientBoostingRegressor(
-        max_iter=300,
-        learning_rate=0.04,
-        max_leaf_nodes=31,
-        l2_regularization=0.1,
+    model = ExtraTreesRegressor(
+        n_estimators=300,
+        min_samples_leaf=50,
+        max_features=0.8,
+        n_jobs=-1,
         random_state=42,
     )
     return Pipeline([("preprocessor", preprocessor), ("model", model)])
