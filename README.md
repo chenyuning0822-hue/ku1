@@ -148,3 +148,21 @@ PYTHONPATH=src python3 scripts/build_many_titan_features.py \
 ```bash
 bash scripts/run_research_pipeline.sh /path/to/2025-01.zip /path/to/2025-02.zip
 ```
+
+## 当前候选策略
+
+先不要继续堆模型，当前最值得盯的是这条纯规则：
+
+```text
+客队方向，临场水位 0.80-0.90，客队受让 0.5-1，水位活跃度 21-50
+```
+
+生成候选策略报告：
+
+```bash
+PYTHONPATH=src python3 scripts/candidate_strategy_report.py \
+  --side-dataset data/processed/side_dataset_2025_all.csv \
+  --output-dir reports/candidate_strategy_2025
+```
+
+报告会输出整体表现、训练/测试期表现、月度盈亏、最大回撤、联赛过滤敏感性和逐单累计收益曲线。联赛过滤目前只作为观察项；如果过滤后测试样本太少，不能直接当成正式策略。
