@@ -22,10 +22,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="reports/ml_baseline")
     parser.add_argument("--model-output", default="models/side_profit_baseline.pkl")
     parser.add_argument("--min-bets", type=int, default=300)
+    parser.add_argument("--n-estimators", type=int, default=300)
+    parser.add_argument("--min-samples-leaf", type=int, default=50)
     return parser.parse_args()
 
 
-def build_pipeline(numeric_features: list[str], categorical_features: list[str]):
+def build_pipeline(
+    numeric_features: list[str],
+    categorical_features: list[str],
+    *,
+    n_estimators: int = 300,
+    min_samples_leaf: int = 50,
+):
     try:
         from sklearn.compose import ColumnTransformer
         from sklearn.ensemble import ExtraTreesRegressor
@@ -52,8 +60,8 @@ def build_pipeline(numeric_features: list[str], categorical_features: list[str])
         ]
     )
     model = ExtraTreesRegressor(
-        n_estimators=300,
-        min_samples_leaf=50,
+        n_estimators=n_estimators,
+        min_samples_leaf=min_samples_leaf,
         max_features=0.8,
         n_jobs=-1,
         random_state=42,
@@ -106,7 +114,12 @@ def main() -> None:
     data = pd.read_csv(args.side_dataset)
     splits = time_split(data, SplitConfig())
     numeric, categorical = available_features(data)
-    model = build_pipeline(numeric, categorical)
+    model = build_pipeline(
+        numeric,
+        categorical,
+        n_estimators=args.n_estimators,
+        min_samples_leaf=args.min_samples_leaf,
+    )
 
     train = splits["train"]
     valid = splits["valid"]
