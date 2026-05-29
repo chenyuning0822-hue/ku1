@@ -38,6 +38,29 @@ CATEGORICAL_FEATURES = [
     "activity_bucket",
 ]
 
+CORE_NUMERIC_FEATURES = [
+    "is_home_side",
+    "side_handicap_first",
+    "side_handicap_last",
+    "side_handicap_change",
+    "side_odds_first",
+    "side_odds_last",
+    "side_odds_change",
+    "last_minute_to_start",
+    "row_count",
+]
+
+CORE_CATEGORICAL_FEATURES = [
+    "side",
+    "league",
+    "line_move",
+    "odds_move",
+    "side_odds_bucket",
+    "side_handicap_bucket",
+    "snapshot_bucket",
+    "activity_bucket",
+]
+
 
 @dataclass(frozen=True)
 class SplitConfig:
@@ -72,6 +95,13 @@ def available_features(df: pd.DataFrame) -> tuple[list[str], list[str]]:
         if col.startswith("side_w_") and pd.api.types.is_numeric_dtype(df[col])
     ]
     categorical = [col for col in CATEGORICAL_FEATURES if col in df.columns]
+    return list(dict.fromkeys(numeric)), categorical
+
+
+def core_features(df: pd.DataFrame) -> tuple[list[str], list[str]]:
+    numeric = [col for col in CORE_NUMERIC_FEATURES if col in df.columns]
+    numeric += [col for col in df.columns if col.startswith("rf_")]
+    categorical = [col for col in CORE_CATEGORICAL_FEATURES if col in df.columns]
     return list(dict.fromkeys(numeric)), categorical
 
 
